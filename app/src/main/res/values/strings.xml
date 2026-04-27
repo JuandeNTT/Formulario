@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Formulario</string>
+    
+    <!-- Form Title -->
+    <string name="form_title">Formulario de Solicitud</string>
+    
+    <!-- Field Labels -->
+    <string name="label_title">Título</string>
+    <string name="label_description">Descripción</string>
+    <string name="label_category">Categoría</string>
+    <string name="label_priority">Prioridad</string>
+    <string name="label_email">Email</string>
+    
+    <!-- Field Hints -->
+    <string name="hint_title">Ingrese el título</string>
+    <string name="hint_description">Ingrese la descripción detallada</string>
+    <string name="hint_category">Seleccione una categoría</string>
+    <string name="hint_email">ejemplo@correo.com</string>
+    
+    <!-- Categories -->
+    <string name="category_general">General</string>
+    <string name="category_technical">Técnico</string>
+    <string name="category_support">Soporte</string>
+    <string name="category_billing">Facturación</string>
+    <string name="category_feedback">Feedback</string>
+    
+    <!-- Validation Errors -->
+    <string name="error_title_short">El título debe tener al menos 5 caracteres</string>
+    <string name="error_title_long">El título no puede superar 60 caracteres</string>
+    <string name="error_description_short">La descripción debe tener al menos 20 caracteres</string>
+    <string name="error_description_long">La descripción no puede superar 500 caracteres</string>
+    <string name="error_email_invalid">Ingrese un email válido</string>
+    <string name="error_category_required">Debe seleccionar una categoría</string>
+    
+    <!-- Button States -->
+    <string name="button_submit">Enviar</string>
+    <string name="button_sending">Enviando…</string>
+    
+    <!-- Success Messages -->
+    <string name="success_message">Formulario enviado exitosamente</string>
+    
+    <!-- Priority Labels -->
+    <string name="priority_value">Prioridad: %d</string>
+</resources>
