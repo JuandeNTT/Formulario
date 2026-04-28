@@ -28,7 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.formulario.R
 import com.example.formulario.ui.components.ErrorDialog
 import com.example.formulario.ui.components.RequestItem
@@ -39,7 +39,7 @@ import com.example.formulario.ui.viewmodel.RequestsViewModel
 @Composable
 fun RequestsScreen(
     onNavigateBack: () -> Unit,
-    viewModel: RequestsViewModel = viewModel()
+    viewModel: RequestsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     

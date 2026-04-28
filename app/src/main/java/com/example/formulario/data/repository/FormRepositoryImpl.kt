@@ -15,8 +15,11 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.net.UnknownHostException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FormRepositoryImpl : IFormRepository {
+@Singleton
+class FormRepositoryImpl @Inject constructor() : IFormRepository {
     private val supabase = SupabaseClient.client
 
     override suspend fun submitForm(formData: FormData): Result<FormRequest> {

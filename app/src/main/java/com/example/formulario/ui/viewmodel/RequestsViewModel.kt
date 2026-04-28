@@ -2,11 +2,12 @@ package com.example.formulario.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.formulario.data.repository.FormRepositoryImpl
 import com.example.formulario.domain.model.FormRequest
 import com.example.formulario.domain.repository.Result
 import com.example.formulario.domain.usecase.GetAllRequestsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -17,11 +18,10 @@ data class RequestsUiState(
     val errorMessage: String? = null
 )
 
-class RequestsViewModel(
-    private val repository: FormRepositoryImpl = FormRepositoryImpl()
+@HiltViewModel
+class RequestsViewModel @Inject constructor(
+    private val getAllRequestsUseCase: GetAllRequestsUseCase
 ) : ViewModel() {
-    
-    private val getAllRequestsUseCase = GetAllRequestsUseCase(repository)
     
     private val _uiState = MutableStateFlow(RequestsUiState())
     val uiState: StateFlow<RequestsUiState> = _uiState.asStateFlow()

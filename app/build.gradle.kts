@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 // Leer variables del archivo .env
@@ -52,6 +54,18 @@ android {
         compose = true
         buildConfig = true
     }
+    
+    // Configuración de source sets para KSP
+    sourceSets {
+        getByName("debug") {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+            java.srcDir("build/generated/ksp/debug/java")
+        }
+        getByName("release") {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+            java.srcDir("build/generated/ksp/release/java")
+        }
+    }
 }
 
 dependencies {
@@ -75,7 +89,12 @@ dependencies {
     
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
-    
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

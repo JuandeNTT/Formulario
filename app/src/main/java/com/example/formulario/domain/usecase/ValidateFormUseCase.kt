@@ -2,6 +2,7 @@ package com.example.formulario.domain.usecase
 
 import android.util.Patterns
 import com.example.formulario.domain.model.FormData
+import javax.inject.Inject
 
 data class ValidationResult(
     val isValid: Boolean,
@@ -11,7 +12,7 @@ data class ValidationResult(
     val emailError: String? = null
 )
 
-class ValidateFormUseCase {
+class ValidateFormUseCase @Inject constructor() {
     
     companion object {
         const val TITLE_MIN_LENGTH = 5

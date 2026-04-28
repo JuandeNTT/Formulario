@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.formulario.R
 import com.example.formulario.ui.components.*
 import com.example.formulario.ui.theme.BackgroundGray
@@ -24,7 +24,7 @@ import com.example.formulario.ui.viewmodel.FormViewModel
 fun FormScreen(
     modifier: Modifier = Modifier,
     onNavigateToRequests: () -> Unit = {},
-    viewModel: FormViewModel = viewModel()
+    viewModel: FormViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
