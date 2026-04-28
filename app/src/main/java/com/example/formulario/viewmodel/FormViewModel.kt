@@ -1,5 +1,6 @@
 package com.example.formulario.viewmodel
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.formulario.data.model.NetworkResult
@@ -20,6 +21,7 @@ data class FormUiState(
     val submitSuccess: Boolean = false,
     val titleCharCount: Int = 0,
     val descriptionCharCount: Int = 0,
+    val emailCharCount: Int = 0,
     val errorMessage: String? = null
 )
 
@@ -35,9 +37,9 @@ class FormViewModel(
         const val TITLE_MAX_LENGTH = 60
         const val DESCRIPTION_MIN_LENGTH = 20
         const val DESCRIPTION_MAX_LENGTH = 500
+        const val EMAIL_MAX_LENGTH = 100
         const val PRIORITY_MIN = 1
         const val PRIORITY_MAX = 5
-        private val EMAIL_REGEX = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}".toRegex()
     }
     
     fun onTitleChange(title: String) {
@@ -78,11 +80,14 @@ class FormViewModel(
     }
     
     fun onEmailChange(email: String) {
-        _uiState.value = _uiState.value.copy(
-            formData = _uiState.value.formData.copy(email = email),
-            emailError = validateEmail(email),
-            submitSuccess = false
-        )
+        if (email.length <= EMAIL_MAX_LENGTH) {
+            _uiState.value = _uiState.value.copy(
+                formData = _uiState.value.formData.copy(email = email),
+                emailCharCount = email.length,
+                emailError = validateEmail(email),
+                submitSuccess = false
+            )
+        }
     }
     
     private fun validateTitle(title: String): String? {
@@ -110,7 +115,7 @@ class FormViewModel(
     private fun validateEmail(email: String): String? {
         return when {
             email.isEmpty() -> null
-            !email.matches(EMAIL_REGEX) -> "Ingrese un email válido"
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Ingrese un email válido"
             else -> null
         }
     }
@@ -123,7 +128,7 @@ class FormViewModel(
                 formData.description.length in DESCRIPTION_MIN_LENGTH..DESCRIPTION_MAX_LENGTH &&
                 formData.category.isNotEmpty() &&
                 formData.priority in PRIORITY_MIN..PRIORITY_MAX &&
-                formData.email.matches(EMAIL_REGEX) &&
+                Patterns.EMAIL_ADDRESS.matcher(formData.email).matches() &&
                 !state.isSubmitting
     }
     

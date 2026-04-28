@@ -227,7 +227,7 @@ fun submitForm() {
 
 ### Validación Regex Email
 ```kotlin
-private val EMAIL_REGEX = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}".toRegex()
+Patterns.EMAIL_ADDRESS
 ```
 
 ### Componentes Modulares
@@ -236,19 +236,6 @@ Cada componente UI está aislado en su propio archivo, facilitando:
 - Reutilización en otros proyectos
 - Testing individual
 - Documentación específica
-
-## 🔮 Mejoras Futuras
-
-- [ ] Persistencia de datos con Room
-- [ ] Envío real a API REST
-- [ ] Testing exhaustivo (Unit, UI)
-- [ ] Soporte para modo offline
-- [ ] Animaciones avanzadas
-- [ ] Internacionalización completa
-
-## 📄 Licencia
-
-Este proyecto es un ejemplo educativo.
 
 ## 👨‍💻 Desarrollo
 
