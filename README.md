@@ -313,13 +313,19 @@ implementation("io.ktor:ktor-client-android:2.3.5")
 
 ### Configuración de Supabase
 
-1. Crear archivo `.env` en la raíz del proyecto:
-```env
-SUPABASE_URL=tu_url_de_supabase
-SUPABASE_KEY=tu_api_key_de_supabase
+1. Crear/editar archivo `local.properties` en la raíz del proyecto:
+```properties
+# SDK location (si es necesario)
+sdk.dir=/ruta/al/sdk
+
+# Supabase Configuration
+supabase.url=tu_url_de_supabase
+supabase.anon.key=tu_api_key_de_supabase
 ```
 
-2. El archivo ya está incluido en `.gitignore`
+2. El archivo `local.properties` ya está incluido en `.gitignore` por defecto en proyectos Android
+
+**Nota**: Las credenciales de Supabase se leen desde `local.properties` en el archivo `app/build.gradle.kts` y se exponen como constantes en `BuildConfig`.
 
 ## 🔧 Instalación y Ejecución
 
@@ -466,9 +472,10 @@ class FormViewModelTest {
 
 ## 🔒 Seguridad
 
-- Las credenciales de Supabase están en archivo `.env` (no versionado)
+- Las credenciales de Supabase están en archivo `local.properties` (no versionado por defecto)
 - Uso de HTTPS para todas las comunicaciones
 - Validación de datos en cliente y servidor
+- Las credenciales se exponen en `BuildConfig` solo en tiempo de compilación
 
 ## 📈 Posibles Mejoras Futuras
 

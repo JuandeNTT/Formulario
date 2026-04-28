@@ -8,11 +8,11 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-// Leer variables del archivo .env
-val envFile = project.rootProject.file(".env")
-val envProperties = Properties()
-if (envFile.exists()) {
-    envProperties.load(envFile.inputStream())
+// Leer variables del archivo local.properties
+val localPropertiesFile = project.rootProject.file("local.properties")
+val localProperties = Properties()
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -33,8 +33,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
         // Exponer credenciales de Supabase en BuildConfig
-        buildConfigField("String", "SUPABASE_URL", "\"${envProperties.getProperty("SUPABASE_URL", "")}\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${envProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${localProperties.getProperty("supabase.url", "")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties.getProperty("supabase.anon.key", "")}\"")
     }
 
     buildTypes {
