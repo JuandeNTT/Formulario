@@ -1,9 +1,11 @@
 package com.example.formulario.data.repository
 
 import com.example.formulario.data.model.FormEntity
-import com.example.formulario.data.model.NetworkResult
 import com.example.formulario.data.remote.SupabaseClient
-import com.example.formulario.model.FormData
+import com.example.formulario.domain.model.FormData
+import com.example.formulario.domain.model.FormRequest
+import com.example.formulario.domain.repository.IFormRepository
+import com.example.formulario.domain.repository.Result
 import io.github.jan.supabase.postgrest.from
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
@@ -14,10 +16,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.net.UnknownHostException
 
-class FormRepository {
+class FormRepositoryImpl : IFormRepository {
     private val supabase = SupabaseClient.client
 
-    suspend fun submitForm(formData: FormData): NetworkResult<FormEntity> {
+    override suspend fun submitForm(formData: FormData): Result<FormRequest> {
         return withContext(Dispatchers.IO) {
             try {
                 withTimeout(8000) {
@@ -35,7 +37,7 @@ class FormRepository {
                         }
                         .decodeSingle<FormEntity>()
 
-                    NetworkResult.Success(response)
+                    Result.Success(response.toDomain())
                 }
             } catch (e: Exception) {
                 val message = when (e) {
@@ -49,7 +51,7 @@ class FormRepository {
                         "Error al enviar el formulario. Asegúrese de estar conectado a Internet e intente de nuevo."
                 }
                 
-                NetworkResult.Error(
+                Result.Error(
                     message = message,
                     exception = e
                 )
@@ -57,7 +59,7 @@ class FormRepository {
         }
     }
 
-    suspend fun getAllRequests(): NetworkResult<List<FormEntity>> {
+    override suspend fun getAllRequests(): Result<List<FormRequest>> {
         return withContext(Dispatchers.IO) {
             try {
                 withTimeout(15000) {
@@ -65,7 +67,7 @@ class FormRepository {
                         .select()
                         .decodeList<FormEntity>()
 
-                    NetworkResult.Success(response)
+                    Result.Success(response.map { it.toDomain() })
                 }
             } catch (e: Exception) {
                 val message = when (e) {
@@ -79,11 +81,23 @@ class FormRepository {
                         "Error al cargar las solicitudes. Asegúrese de estar conectado a Internet e intente de nuevo."
                 }
                 
-                NetworkResult.Error(
+                Result.Error(
                     message = message,
                     exception = e
                 )
             }
         }
+    }
+
+    private fun FormEntity.toDomain(): FormRequest {
+        return FormRequest(
+            id = id,
+            title = title,
+            description = description,
+            category = category,
+            priority = priority,
+            email = email,
+            createdAt = createdAt
+        )
     }
 }

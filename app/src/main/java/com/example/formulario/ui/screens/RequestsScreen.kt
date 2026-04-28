@@ -33,7 +33,7 @@ import com.example.formulario.R
 import com.example.formulario.ui.components.ErrorDialog
 import com.example.formulario.ui.components.RequestItem
 import com.example.formulario.ui.theme.Dimens
-import com.example.formulario.viewmodel.RequestsViewModel
+import com.example.formulario.ui.viewmodel.RequestsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,10 +61,7 @@ fun RequestsScreen(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = { viewModel.loadRequests() },
-                        enabled = !uiState.isLoading
-                    ) {
+                    IconButton(onClick = { viewModel.loadRequests() }) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = stringResource(R.string.refresh_requests)
@@ -127,7 +124,7 @@ fun RequestsScreen(
             uiState.errorMessage?.let { errorMessage ->
                 ErrorDialog(
                     errorMessage = errorMessage,
-                    onDismiss = { viewModel.dismissErrorMessage() }
+                    onDismiss = { viewModel.dismissError() }
                 )
             }
         }

@@ -1,6 +1,6 @@
 # Formulario Android - Jetpack Compose
 
-Aplicación Android de formulario desarrollada con Jetpack Compose siguiendo el patrón arquitectural MVVM y Material Design 3.
+Aplicación Android de formulario desarrollada con Jetpack Compose siguiendo la arquitectura **Clean Architecture** con las capas **Data-Domain-UI** y Material Design 3.
 
 ## 📋 Características
 
@@ -18,73 +18,172 @@ Aplicación Android de formulario desarrollada con Jetpack Compose siguiendo el 
 - ✅ Validación de rango para prioridad (1-5)
 - ✅ Botón de envío deshabilitado cuando el formulario es inválido
 
-### Estados del Formulario
+### Funcionalidades
+- ✅ Envío de formulario a Supabase
+- ✅ Visualización de todas las solicitudes
 - ✅ Estado "Enviando..." con indicador de progreso
 - ✅ Prevención de doble envío durante el proceso
 - ✅ Mensaje de éxito tras envío exitoso
-- ✅ Reset automático del formulario después del envío
+- ✅ Manejo de errores con diálogos informativos
+- ✅ Navegación entre pantallas
 
-## 🏗️ Arquitectura
+## 🏗️ Arquitectura Clean - Data-Domain-UI
 
-### Patrón MVVM (Model-View-ViewModel)
+### Estructura del Proyecto
 
 ```
 app/src/main/java/com/example/formulario/
-├── model/
-│   └── FormData.kt              # Modelo de datos del formulario
-├── viewmodel/
-│   └── FormViewModel.kt         # Lógica de negocio y gestión de estado
-├── ui/
-│   ├── components/              # Componentes reutilizables
-│   │   ├── FormTextField.kt     # Campo de texto con contador
-│   │   ├── CategoryDropdown.kt  # Dropdown de categorías
-│   │   ├── PrioritySlider.kt    # Slider de prioridad
-│   │   ├── EmailTextField.kt    # Campo de email especializado
-│   │   ├── SubmitButton.kt      # Botón con estados
-│   │   └── SuccessMessage.kt    # Mensaje de éxito
+├── data/                           # Capa de Datos
+│   ├── model/
+│   │   ├── FormEntity.kt          # Entidad para base de datos
+│   │   └── NetworkResult.kt       # Wrapper para resultados de red
+│   ├── remote/
+│   │   └── SupabaseClient.kt      # Cliente de Supabase
+│   └── repository/
+│       └── FormRepositoryImpl.kt  # Implementación del repositorio
+│
+├── domain/                         # Capa de Dominio (Lógica de Negocio)
+│   ├── model/
+│   │   ├── FormData.kt            # Modelo de dominio para el formulario
+│   │   └── FormRequest.kt         # Modelo de dominio para solicitudes
+│   ├── repository/
+│   │   └── IFormRepository.kt     # Interfaz del repositorio
+│   └── usecase/
+│       ├── ValidateFormUseCase.kt # Caso de uso: Validación
+│       ├── SubmitFormUseCase.kt   # Caso de uso: Envío
+│       └── GetAllRequestsUseCase.kt # Caso de uso: Obtener solicitudes
+│
+├── ui/                             # Capa de Presentación
+│   ├── viewmodel/
+│   │   ├── FormViewModel.kt       # ViewModel del formulario
+│   │   └── RequestsViewModel.kt   # ViewModel de solicitudes
 │   ├── screens/
-│   │   └── FormScreen.kt        # Pantalla principal del formulario
+│   │   ├── FormScreen.kt          # Pantalla del formulario
+│   │   └── RequestsScreen.kt      # Pantalla de solicitudes
+│   ├── components/                # Componentes reutilizables
+│   │   ├── FormTextField.kt       # Campo de texto con contador
+│   │   ├── CategoryDropdown.kt    # Dropdown de categorías
+│   │   ├── PrioritySlider.kt      # Slider de prioridad
+│   │   ├── EmailTextField.kt      # Campo de email especializado
+│   │   ├── SubmitButton.kt        # Botón con estados
+│   │   ├── SuccessMessage.kt      # Mensaje de éxito
+│   │   ├── ErrorDialog.kt         # Diálogo de error
+│   │   └── RequestItem.kt         # Item de solicitud
 │   └── theme/
-│       ├── Dimens.kt            # Dimensiones centralizadas
-│       ├── Color.kt             # Colores del tema
-│       ├── Theme.kt             # Configuración de Material 3
-│       └── Type.kt              # Tipografía
-└── MainActivity.kt              # Actividad principal
+│       ├── Dimens.kt              # Dimensiones centralizadas
+│       ├── Color.kt               # Colores del tema
+│       ├── Theme.kt               # Configuración de Material 3
+│       └── Type.kt                # Tipografía
+│
+├── navigation/
+│   └── Navigation.kt              # Navegación entre pantallas
+├── utils/
+│   └── DateUtils.kt               # Utilidades para fechas
+└── MainActivity.kt                # Actividad principal
 ```
 
-### Componentes Clave
+## 🎯 Capas de la Arquitectura
 
-#### 1. FormData (Model)
+### 1. Capa de Datos (Data Layer)
+
+**Responsabilidad**: Gestión de fuentes de datos (API, base de datos local, etc.)
+
+#### Componentes:
+- **FormEntity**: Modelo de datos que representa la estructura en la base de datos
+- **NetworkResult**: Clase sellada para encapsular resultados de operaciones de red (Success, Error, Loading)
+- **SupabaseClient**: Cliente singleton para interactuar con Supabase
+- **FormRepositoryImpl**: Implementación concreta del repositorio que gestiona el acceso a datos
+
 ```kotlin
-data class FormData(
-    val title: String = "",
-    val description: String = "",
-    val category: String = "",
-    val priority: Int = 1,
-    val email: String = ""
-)
+// Ejemplo de uso
+class FormRepositoryImpl(
+    private val supabaseClient: SupabaseClient
+) : IFormRepository {
+    override suspend fun submitForm(formData: FormData): NetworkResult<Unit>
+    override suspend fun getAllRequests(): NetworkResult<List<FormRequest>>
+}
 ```
 
-#### 2. FormViewModel (ViewModel)
-- Gestión del estado con `StateFlow`
-- Validaciones en tiempo real
-- Lógica de envío del formulario
-- Prevención de doble envío
+### 2. Capa de Dominio (Domain Layer)
 
-#### 3. FormScreen (View)
-- UI declarativa con Jetpack Compose
-- Material Design 3
-- Responsive y scrollable
-- Feedback visual para errores y estados
+**Responsabilidad**: Lógica de negocio pura, independiente de frameworks
 
-#### 4. Componentes Reutilizables
+#### Componentes:
 
-**FormTextField**: Campo de texto genérico con contador de caracteres y validación
-**CategoryDropdown**: Selector desplegable con Material 3
-**PrioritySlider**: Slider visual con indicador numérico destacado
-**EmailTextField**: Campo especializado para email con icono
-**SubmitButton**: Botón con estados de carga y prevención de doble envío
-**SuccessMessage**: Tarjeta de confirmación con diseño Material 3
+**Modelos de Dominio**:
+- `FormData`: Representa los datos del formulario en el dominio
+- `FormRequest`: Representa una solicitud guardada
+
+**Interfaz de Repositorio**:
+- `IFormRepository`: Contrato que define las operaciones de datos (patrón Repository)
+
+**Casos de Uso (Use Cases)**:
+- `ValidateFormUseCase`: Valida todos los campos del formulario
+- `SubmitFormUseCase`: Envía el formulario a través del repositorio
+- `GetAllRequestsUseCase`: Obtiene todas las solicitudes guardadas
+
+```kotlin
+// Ejemplo de caso de uso
+class SubmitFormUseCase(
+    private val repository: IFormRepository
+) {
+    suspend operator fun invoke(formData: FormData): NetworkResult<Unit> {
+        return repository.submitForm(formData)
+    }
+}
+```
+
+**Ventajas de los Use Cases**:
+- Encapsulan lógica de negocio específica
+- Fáciles de testear unitariamente
+- Reutilizables en diferentes ViewModels
+- Facilitan el mantenimiento y escalabilidad
+
+### 3. Capa de Presentación (UI Layer)
+
+**Responsabilidad**: Interfaz de usuario y gestión de estado
+
+#### Componentes:
+- **ViewModels**: Gestionan el estado de la UI y coordinan los casos de uso
+- **Screens**: Pantallas principales de la aplicación
+- **Components**: Componentes reutilizables de UI
+- **Theme**: Configuración del tema Material 3
+
+```kotlin
+// Ejemplo de ViewModel usando casos de uso
+class FormViewModel(
+    private val validateFormUseCase: ValidateFormUseCase,
+    private val submitFormUseCase: SubmitFormUseCase
+) : ViewModel() {
+    // Estado y lógica de presentación
+}
+```
+
+## 🔄 Flujo de Datos
+
+```
+UI (Screen) 
+    ↓ Acción del usuario
+ViewModel 
+    ↓ Invoca
+Use Case 
+    ↓ Usa
+Repository Interface 
+    ↓ Implementa
+Repository Implementation 
+    ↓ Accede
+Data Source (Supabase)
+```
+
+### Ejemplo de Flujo: Envío de Formulario
+
+1. **UI**: Usuario presiona el botón "Enviar"
+2. **ViewModel**: `FormViewModel.submitForm()` se invoca
+3. **Use Case**: `SubmitFormUseCase` valida y procesa los datos
+4. **Repository**: `FormRepositoryImpl` envía los datos a Supabase
+5. **Data Source**: `SupabaseClient` realiza la petición HTTP
+6. **Respuesta**: El resultado fluye de vuelta por las capas
+7. **UI**: Se actualiza mostrando éxito o error
 
 ## 🎨 Diseño
 
@@ -108,9 +207,6 @@ object Dimens {
 }
 ```
 
-### Strings Externalizados
-Todos los textos están en `res/values/strings.xml` para facilitar la internacionalización y mantenimiento.
-
 ## 🚀 Configuración del Proyecto
 
 ### Requisitos
@@ -119,6 +215,7 @@ Todos los textos están en `res/values/strings.xml` para facilitar la internacio
 - compileSdk 34
 - minSdk 24
 - targetSdk 34
+- Cuenta de Supabase configurada
 
 ### Dependencias Principales
 ```kotlin
@@ -132,16 +229,32 @@ implementation("androidx.compose.ui:ui-tooling-preview")
 implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
-// Activity Compose
-implementation("androidx.activity:activity-compose:1.7.2")
+// Navigation Compose
+implementation("androidx.navigation:navigation-compose:2.7.3")
+
+// Supabase
+implementation("io.github.jan-tennert.supabase:postgrest-kt:2.0.0")
+implementation("io.github.jan-tennert.supabase:realtime-kt:2.0.0")
+implementation("io.ktor:ktor-client-android:2.3.5")
 ```
+
+### Configuración de Supabase
+
+1. Crear archivo `.env` en la raíz del proyecto:
+```env
+SUPABASE_URL=tu_url_de_supabase
+SUPABASE_KEY=tu_api_key_de_supabase
+```
+
+2. El archivo ya está incluido en `.gitignore`
 
 ## 🔧 Instalación y Ejecución
 
 1. Clonar el repositorio
-2. Abrir el proyecto en Android Studio
-3. Sincronizar Gradle
-4. Ejecutar en un dispositivo o emulador con API 24+
+2. Configurar las credenciales de Supabase en `.env`
+3. Abrir el proyecto en Android Studio
+4. Sincronizar Gradle
+5. Ejecutar en un dispositivo o emulador con API 24+
 
 ```bash
 # Compilar el proyecto
@@ -153,12 +266,19 @@ implementation("androidx.activity:activity-compose:1.7.2")
 
 ## 📱 Uso
 
+### Pantalla de Formulario
 1. **Título**: Ingrese entre 5 y 60 caracteres
 2. **Descripción**: Ingrese entre 20 y 500 caracteres
 3. **Categoría**: Seleccione una opción del desplegable
 4. **Prioridad**: Ajuste el slider entre 1 y 5
 5. **Email**: Ingrese un email válido
 6. **Enviar**: El botón se habilitará cuando todos los campos sean válidos
+7. **Ver Solicitudes**: Navegue a la pantalla de solicitudes guardadas
+
+### Pantalla de Solicitudes
+- Visualice todas las solicitudes enviadas
+- Cada tarjeta muestra título, descripción, categoría, prioridad, email y fecha
+- Los colores de prioridad ayudan a identificar la urgencia
 
 ## ✅ Validaciones Implementadas
 
@@ -170,73 +290,95 @@ implementation("androidx.activity:activity-compose:1.7.2")
 | Prioridad | 1-5 | Validación automática con slider |
 | Email | Formato válido | "Ingrese un email válido" |
 
-## 🎯 Decisiones de Diseño
+## 🎯 Ventajas de esta Arquitectura
 
-### Por qué MVVM
-- Separación clara de responsabilidades
-- Facilita testing unitario del ViewModel
-- Reactividad con StateFlow
-- Compatible con ciclo de vida de Android
+### Separación de Responsabilidades
+- Cada capa tiene una responsabilidad única y bien definida
+- Cambios en una capa no afectan a las demás
 
-### Por qué Material 3
-- Diseño moderno y consistente
-- Componentes accesibles
-- Soporte para temas dinámicos
-- Guías de diseño de Google
+### Testabilidad
+- Los casos de uso pueden testearse independientemente
+- Los ViewModels pueden testearse sin dependencias de Android
+- Los repositorios pueden mockearse fácilmente
 
-### Por qué Jetpack Compose
+### Escalabilidad
+- Fácil agregar nuevas funcionalidades
+- Nuevos casos de uso se integran sin modificar código existente
+- Componentes reutilizables en toda la aplicación
+
+### Mantenibilidad
+- Código organizado y fácil de entender
+- Búsqueda rápida de funcionalidades
+- Documentación implícita por la estructura
+
+### Independencia de Frameworks
+- La capa de dominio no depende de Android ni Compose
+- Fácil migración a otras tecnologías si es necesario
+- Lógica de negocio portable
+
+## 🧪 Testing
+
+### Unit Tests - Domain Layer
+```kotlin
+class ValidateFormUseCaseTest {
+    @Test
+    fun `validate title with valid input returns success`() {
+        val useCase = ValidateFormUseCase()
+        val result = useCase.validateTitle("Valid Title")
+        assertTrue(result.isValid)
+    }
+}
+```
+
+### Unit Tests - ViewModel
+```kotlin
+class FormViewModelTest {
+    @Test
+    fun `submitForm calls submitFormUseCase`() = runTest {
+        val mockUseCase = mockk<SubmitFormUseCase>()
+        val viewModel = FormViewModel(mockUseCase)
+        viewModel.submitForm()
+        verify { mockUseCase.invoke(any()) }
+    }
+}
+```
+
+## 📝 Decisiones de Diseño
+
+### ¿Por qué Clean Architecture?
+- **Separación de preocupaciones**: Cada capa tiene responsabilidades claras
+- **Testabilidad**: Fácil crear tests unitarios para cada componente
+- **Escalabilidad**: Agregar nuevas funcionalidades sin afectar código existente
+- **Mantenibilidad**: Código organizado y fácil de navegar
+
+### ¿Por qué Use Cases?
+- Encapsulan lógica de negocio específica
+- Representan acciones del usuario de forma clara
+- Facilitan la reutilización de lógica
+- Permiten testing independiente
+
+### ¿Por qué Repository Pattern?
+- Abstrae el origen de los datos
+- Facilita el cambio de fuente de datos (API, BD local, caché)
+- Permite mockear datos en tests
+- Centraliza la lógica de acceso a datos
+
+### ¿Por qué Jetpack Compose?
 - UI declarativa y reactiva
 - Menos código boilerplate
 - Preview en tiempo real
 - Integración nativa con ViewModel
 
-### Por qué Componentes Reutilizables
-- Código más mantenible y escalable
-- Facilita testing individual
-- Reutilización en otros formularios
-- Separación de responsabilidades en UI
+### ¿Por qué Material 3?
+- Diseño moderno y consistente
+- Componentes accesibles
+- Soporte para temas dinámicos
+- Guías de diseño de Google
 
-## 🧪 Testing
+## � Seguridad
 
-### ViewModel Testing
-El ViewModel puede ser testeado unitariamente:
-```kotlin
-@Test
-fun `validate title with valid input`() {
-    viewModel.onTitleChange("Valid Title")
-    assertNull(viewModel.uiState.value.titleError)
-}
-```
+- Las credenciales de Supabase están en archivo `.env` (no versionado)
+- Uso de HTTPS para todas las comunicaciones
+- Validación de datos en cliente y servidor
 
-## 📝 Notas Técnicas
-
-### Gestión de Estado
-- Uso de `StateFlow` para estado reactivo
-- `collectAsState()` en Compose para observar cambios
-- Estado inmutable con `copy()`
-
-### Prevención de Doble Envío
-```kotlin
-fun submitForm() {
-    if (!isFormValid() || _uiState.value.isSubmitting) {
-        return
-    }
-    // ... lógica de envío
-}
-```
-
-### Validación Regex Email
-```kotlin
-Patterns.EMAIL_ADDRESS
-```
-
-### Componentes Modulares
-Cada componente UI está aislado en su propio archivo, facilitando:
-- Mantenimiento independiente
-- Reutilización en otros proyectos
-- Testing individual
-- Documentación específica
-
-## 👨‍💻 Desarrollo
-
-Desarrollado con Jetpack Compose y siguiendo las mejores prácticas de Android moderno.
+## 📈 Pos

@@ -1,11 +1,12 @@
-package com.example.formulario.viewmodel
+package com.example.formulario.ui.viewmodel
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.formulario.data.model.NetworkResult
-import com.example.formulario.data.repository.FormRepository
-import com.example.formulario.model.FormData
+import com.example.formulario.data.repository.FormRepositoryImpl
+import com.example.formulario.domain.model.FormData
+import com.example.formulario.domain.repository.Result
+import com.example.formulario.domain.usecase.SubmitFormUseCase
+import com.example.formulario.domain.usecase.ValidateFormUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,20 +27,23 @@ data class FormUiState(
 )
 
 class FormViewModel(
-    private val repository: FormRepository = FormRepository()
+    private val repository: FormRepositoryImpl = FormRepositoryImpl()
 ) : ViewModel() {
+    
+    private val submitFormUseCase = SubmitFormUseCase(repository)
+    private val validateFormUseCase = ValidateFormUseCase()
     
     private val _uiState = MutableStateFlow(FormUiState())
     val uiState: StateFlow<FormUiState> = _uiState.asStateFlow()
     
     companion object {
-        const val TITLE_MIN_LENGTH = 5
-        const val TITLE_MAX_LENGTH = 60
-        const val DESCRIPTION_MIN_LENGTH = 20
-        const val DESCRIPTION_MAX_LENGTH = 500
-        const val EMAIL_MAX_LENGTH = 100
-        const val PRIORITY_MIN = 1
-        const val PRIORITY_MAX = 5
+        const val TITLE_MIN_LENGTH = ValidateFormUseCase.TITLE_MIN_LENGTH
+        const val TITLE_MAX_LENGTH = ValidateFormUseCase.TITLE_MAX_LENGTH
+        const val DESCRIPTION_MIN_LENGTH = ValidateFormUseCase.DESCRIPTION_MIN_LENGTH
+        const val DESCRIPTION_MAX_LENGTH = ValidateFormUseCase.DESCRIPTION_MAX_LENGTH
+        const val EMAIL_MAX_LENGTH = ValidateFormUseCase.EMAIL_MAX_LENGTH
+        const val PRIORITY_MIN = ValidateFormUseCase.PRIORITY_MIN
+        const val PRIORITY_MAX = ValidateFormUseCase.PRIORITY_MAX
     }
     
     fun onTitleChange(title: String) {
@@ -47,7 +51,7 @@ class FormViewModel(
             _uiState.value = _uiState.value.copy(
                 formData = _uiState.value.formData.copy(title = title),
                 titleCharCount = title.length,
-                titleError = validateTitle(title),
+                titleError = validateFormUseCase.validateTitle(title),
                 submitSuccess = false
             )
         }
@@ -58,7 +62,7 @@ class FormViewModel(
             _uiState.value = _uiState.value.copy(
                 formData = _uiState.value.formData.copy(description = description),
                 descriptionCharCount = description.length,
-                descriptionError = validateDescription(description),
+                descriptionError = validateFormUseCase.validateDescription(description),
                 submitSuccess = false
             )
         }
@@ -67,7 +71,7 @@ class FormViewModel(
     fun onCategoryChange(category: String) {
         _uiState.value = _uiState.value.copy(
             formData = _uiState.value.formData.copy(category = category),
-            categoryError = validateCategory(category),
+            categoryError = validateFormUseCase.validateCategory(category),
             submitSuccess = false
         )
     }
@@ -84,52 +88,15 @@ class FormViewModel(
             _uiState.value = _uiState.value.copy(
                 formData = _uiState.value.formData.copy(email = email),
                 emailCharCount = email.length,
-                emailError = validateEmail(email),
+                emailError = validateFormUseCase.validateEmail(email),
                 submitSuccess = false
             )
         }
     }
     
-    private fun validateTitle(title: String): String? {
-        return when {
-            title.isEmpty() -> null
-            title.length < TITLE_MIN_LENGTH -> "El título debe tener al menos $TITLE_MIN_LENGTH caracteres"
-            title.length > TITLE_MAX_LENGTH -> "El título no puede superar $TITLE_MAX_LENGTH caracteres"
-            else -> null
-        }
-    }
-    
-    private fun validateDescription(description: String): String? {
-        return when {
-            description.isEmpty() -> null
-            description.length < DESCRIPTION_MIN_LENGTH -> "La descripción debe tener al menos $DESCRIPTION_MIN_LENGTH caracteres"
-            description.length > DESCRIPTION_MAX_LENGTH -> "La descripción no puede superar $DESCRIPTION_MAX_LENGTH caracteres"
-            else -> null
-        }
-    }
-    
-    private fun validateCategory(category: String): String? {
-        return if (category.isEmpty()) "Debe seleccionar una categoría" else null
-    }
-    
-    private fun validateEmail(email: String): String? {
-        return when {
-            email.isEmpty() -> null
-            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Ingrese un email válido"
-            else -> null
-        }
-    }
-    
     fun isFormValid(): Boolean {
-        val state = _uiState.value
-        val formData = state.formData
-        
-        return formData.title.length in TITLE_MIN_LENGTH..TITLE_MAX_LENGTH &&
-                formData.description.length in DESCRIPTION_MIN_LENGTH..DESCRIPTION_MAX_LENGTH &&
-                formData.category.isNotEmpty() &&
-                formData.priority in PRIORITY_MIN..PRIORITY_MAX &&
-                Patterns.EMAIL_ADDRESS.matcher(formData.email).matches() &&
-                !state.isSubmitting
+        val validation = validateFormUseCase(_uiState.value.formData)
+        return validation.isValid && !_uiState.value.isSubmitting
     }
     
     fun submitForm() {
@@ -143,21 +110,21 @@ class FormViewModel(
                 errorMessage = null
             )
             
-            when (val result = repository.submitForm(_uiState.value.formData)) {
-                is NetworkResult.Success -> {
+            when (val result = submitFormUseCase(_uiState.value.formData)) {
+                is Result.Success -> {
                     _uiState.value = _uiState.value.copy(
                         isSubmitting = false,
                         submitSuccess = true
                     )
                     resetForm()
                 }
-                is NetworkResult.Error -> {
+                is Result.Error -> {
                     _uiState.value = _uiState.value.copy(
                         isSubmitting = false,
                         errorMessage = result.message
                     )
                 }
-                is NetworkResult.Loading -> {
+                is Result.Loading -> {
                     // No action needed
                 }
             }

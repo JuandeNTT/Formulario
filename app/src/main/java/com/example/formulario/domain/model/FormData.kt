@@ -1,4 +1,4 @@
-package com.example.formulario.model
+package com.example.formulario.domain.model
 
 data class FormData(
     val title: String = "",

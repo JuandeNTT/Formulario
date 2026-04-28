@@ -21,13 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.example.formulario.R
-import com.example.formulario.data.model.FormEntity
+import com.example.formulario.domain.model.FormRequest
 import com.example.formulario.ui.theme.Dimens
 import com.example.formulario.utils.convertirAHoraLocal
 
 @Composable
 fun RequestItem(
-    request: FormEntity,
+    request: FormRequest,
     modifier: Modifier = Modifier
 ) {
     Card(

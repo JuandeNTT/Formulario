@@ -1,24 +1,27 @@
-package com.example.formulario.viewmodel
+package com.example.formulario.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.formulario.data.model.FormEntity
-import com.example.formulario.data.model.NetworkResult
-import com.example.formulario.data.repository.FormRepository
+import com.example.formulario.data.repository.FormRepositoryImpl
+import com.example.formulario.domain.model.FormRequest
+import com.example.formulario.domain.repository.Result
+import com.example.formulario.domain.usecase.GetAllRequestsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class RequestsUiState(
-    val requests: List<FormEntity> = emptyList(),
     val isLoading: Boolean = false,
+    val requests: List<FormRequest> = emptyList(),
     val errorMessage: String? = null
 )
 
 class RequestsViewModel(
-    private val repository: FormRepository = FormRepository()
+    private val repository: FormRepositoryImpl = FormRepositoryImpl()
 ) : ViewModel() {
+    
+    private val getAllRequestsUseCase = GetAllRequestsUseCase(repository)
     
     private val _uiState = MutableStateFlow(RequestsUiState())
     val uiState: StateFlow<RequestsUiState> = _uiState.asStateFlow()
@@ -34,29 +37,28 @@ class RequestsViewModel(
                 errorMessage = null
             )
             
-            when (val result = repository.getAllRequests()) {
-                is NetworkResult.Success -> {
+            when (val result = getAllRequestsUseCase()) {
+                is Result.Success -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        requests = result.data.sortedByDescending { it.createdAt },
-                        errorMessage = null
+                        requests = result.data.sortedByDescending { it.createdAt }
                     )
                 }
-                is NetworkResult.Error -> {
+                is Result.Error -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         requests = emptyList(),
                         errorMessage = result.message
                     )
                 }
-                is NetworkResult.Loading -> {
-                    // No action needed
+                is Result.Loading -> {
+                    // Already loading
                 }
             }
         }
     }
     
-    fun dismissErrorMessage() {
+    fun dismissError() {
         _uiState.value = _uiState.value.copy(errorMessage = null)
     }
 }

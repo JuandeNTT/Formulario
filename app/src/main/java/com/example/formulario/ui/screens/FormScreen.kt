@@ -18,7 +18,7 @@ import com.example.formulario.R
 import com.example.formulario.ui.components.*
 import com.example.formulario.ui.theme.BackgroundGray
 import com.example.formulario.ui.theme.Dimens
-import com.example.formulario.viewmodel.FormViewModel
+import com.example.formulario.ui.viewmodel.FormViewModel
 
 @Composable
 fun FormScreen(
@@ -99,7 +99,7 @@ private fun FormHeader() {
 
 @Composable
 private fun FormCard(
-    uiState: com.example.formulario.viewmodel.FormUiState,
+    uiState: com.example.formulario.ui.viewmodel.FormUiState,
     viewModel: FormViewModel,
     categories: List<String>
 ) {
