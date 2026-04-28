@@ -1,5 +1,6 @@
 package com.example.formulario.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,9 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.formulario.R
 import com.example.formulario.ui.components.*
+import com.example.formulario.ui.theme.BackgroundGray
 import com.example.formulario.ui.theme.Dimens
 import com.example.formulario.viewmodel.FormViewModel
 
@@ -34,7 +37,11 @@ fun FormScreen(
         stringResource(R.string.category_feedback)
     )
     
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundGray)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,9 +87,13 @@ fun FormScreen(
 private fun FormHeader() {
     Text(
         text = stringResource(R.string.form_title),
-        style = MaterialTheme.typography.headlineMedium,
+        style = MaterialTheme.typography.headlineLarge,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = Dimens.paddingLarge)
+        color = MaterialTheme.colorScheme.onBackground,
+        modifier = Modifier.padding(
+            top = Dimens.paddingMedium,
+            bottom = Dimens.paddingLarge
+        )
     )
 }
 
@@ -94,12 +105,16 @@ private fun FormCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Dimens.cardElevation)
+        elevation = CardDefaults.cardElevation(defaultElevation = Dimens.cardElevation),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Dimens.paddingLarge)
+                .padding(24.dp)
         ) {
             TitleField(
                 value = uiState.formData.title,
@@ -122,14 +137,13 @@ private fun FormCard(
             Spacer(modifier = Modifier.height(Dimens.spacingMedium))
             
             CategoryDropdown(
-                value = uiState.formData.category,
-                onValueChange = { viewModel.onCategoryChange(it) },
+                selectedCategory = uiState.formData.category,
+                onCategorySelected = { viewModel.onCategoryChange(it) },
                 categories = categories,
                 label = stringResource(R.string.label_category),
                 placeholder = stringResource(R.string.hint_category),
                 errorMessage = uiState.categoryError,
-                enabled = !uiState.isSubmitting,
-                modifier = Modifier.fillMaxWidth()
+                enabled = !uiState.isSubmitting
             )
             
             Spacer(modifier = Modifier.height(Dimens.spacingLarge))
@@ -151,8 +165,9 @@ private fun FormCard(
                 label = stringResource(R.string.label_email),
                 placeholder = stringResource(R.string.hint_email),
                 errorMessage = uiState.emailError,
-                enabled = !uiState.isSubmitting,
-                modifier = Modifier.fillMaxWidth()
+                charCount = uiState.emailCharCount,
+                maxLength = FormViewModel.EMAIL_MAX_LENGTH,
+                enabled = !uiState.isSubmitting
             )
             
             Spacer(modifier = Modifier.height(Dimens.spacingLarge))

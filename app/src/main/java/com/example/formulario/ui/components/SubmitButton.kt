@@ -3,8 +3,10 @@ package com.example.formulario.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.formulario.ui.theme.Dimens
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SubmitButton(
@@ -17,23 +19,45 @@ fun SubmitButton(
 ) {
     Button(
         onClick = onClick,
-        enabled = enabled,
+        enabled = enabled && !isSubmitting,
         modifier = modifier
             .fillMaxWidth()
-            .height(Dimens.buttonHeight)
+            .height(56.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f),
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f)
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 2.dp,
+            pressedElevation = 4.dp,
+            disabledElevation = 0.dp
+        )
     ) {
         if (isSubmitting) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(Dimens.paddingLarge),
-                color = MaterialTheme.colorScheme.onPrimary,
-                strokeWidth = Dimens.paddingExtraSmall
-            )
-            Spacer(modifier = Modifier.width(Dimens.paddingSmall))
-            Text(sendingText)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = sendingText,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         } else {
             Text(
                 text = buttonText,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

@@ -1,12 +1,17 @@
 package com.example.formulario.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.example.formulario.ui.theme.Dimens
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.formulario.ui.theme.Primary
+import com.example.formulario.ui.theme.PrimaryContainer
 
 @Composable
 fun PrioritySlider(
@@ -19,46 +24,80 @@ fun PrioritySlider(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
-        )
-
-        Spacer(modifier = Modifier.height(Dimens.spacingSmall))
-
+        // Label con valor
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Slider(
-                value = value.toFloat(),
-                onValueChange = onValueChange,
-                valueRange = minValue.toFloat()..maxValue.toFloat(),
-                steps = maxValue - minValue - 1,
-                modifier = Modifier.weight(1f),
-                enabled = enabled
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
             )
-
-            Spacer(modifier = Modifier.width(Dimens.paddingMedium))
-
+            
+            // Badge con el valor actual
             Surface(
-                shape = MaterialTheme.shapes.small,
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.size(Dimens.buttonHeight)
+                shape = RoundedCornerShape(20.dp),
+                color = PrimaryContainer,
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 48.dp, minHeight = 32.dp)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = value.toString(),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        ),
+                        color = Primary
                     )
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Slider moderno
+        Slider(
+            value = value.toFloat(),
+            onValueChange = onValueChange,
+            valueRange = minValue.toFloat()..maxValue.toFloat(),
+            steps = maxValue - minValue - 1,
+            enabled = enabled,
+            colors = SliderDefaults.colors(
+                thumbColor = Primary,
+                activeTrackColor = Primary,
+                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledThumbColor = Primary.copy(alpha = 0.4f),
+                disabledActiveTrackColor = Primary.copy(alpha = 0.4f)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        // Etiquetas de rango
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Mín: $minValue",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 12.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = "Máx: $maxValue",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 12.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

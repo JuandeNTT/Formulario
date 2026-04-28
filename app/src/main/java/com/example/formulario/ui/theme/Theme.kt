@@ -12,25 +12,65 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = PrimaryDark,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    primaryContainer = PrimaryDarkVariant,
+    onPrimaryContainer = androidx.compose.ui.graphics.Color.White,
+    
+    secondary = Secondary,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    secondaryContainer = SecondaryVariant,
+    onSecondaryContainer = androidx.compose.ui.graphics.Color.White,
+    
+    tertiary = Secondary,
+    onTertiary = androidx.compose.ui.graphics.Color.White,
+    
+    background = BackgroundDark,
+    onBackground = androidx.compose.ui.graphics.Color.White,
+    
+    surface = SurfaceDarkMode,
+    onSurface = androidx.compose.ui.graphics.Color.White,
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = TextTertiary,
+    
+    error = Error,
+    onError = androidx.compose.ui.graphics.Color.White,
+    errorContainer = ErrorContainer,
+    onErrorContainer = Error,
+    
+    outline = Border,
+    outlineVariant = BorderLight
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Primary,
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    primaryContainer = PrimaryContainer,
+    onPrimaryContainer = PrimaryVariant,
+    
+    secondary = Secondary,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    secondaryContainer = SecondaryContainer,
+    onSecondaryContainer = SecondaryVariant,
+    
+    tertiary = Secondary,
+    onTertiary = androidx.compose.ui.graphics.Color.White,
+    
+    background = SurfaceLight,
+    onBackground = TextPrimary,
+    
+    surface = androidx.compose.ui.graphics.Color.White,
+    onSurface = TextPrimary,
+    surfaceVariant = SurfaceVariant,
+    onSurfaceVariant = TextSecondary,
+    
+    error = Error,
+    onError = androidx.compose.ui.graphics.Color.White,
+    errorContainer = ErrorContainer,
+    onErrorContainer = Error,
+    
+    outline = Border,
+    outlineVariant = BorderLight
 )
 
 @Composable
