@@ -10,6 +10,8 @@
     <string name="label_category">Categoría</string>
     <string name="label_priority">Prioridad</string>
     <string name="label_email">Email</string>
+    <string name="category_label">Categoría</string>
+    <string name="email_label">Email</string>
     
     <!-- Field Hints -->
     <string name="hint_title">Ingrese el título</string>
@@ -41,4 +43,20 @@
     
     <!-- Priority Labels -->
     <string name="priority_value">Prioridad: %d</string>
+    
+    <!-- Navigation -->
+    <string name="button_view_requests">Ver solicitudes enviadas</string>
+    <string name="requests_screen_title">Solicitudes</string>
+    <string name="navigate_back">Volver</string>
+    <string name="refresh_requests">Actualizar</string>
+    <string name="no_requests_found">No hay solicitudes para mostrar</string>
+    
+    <!-- Error Dialog -->
+    <string name="error_dialog_title">Error</string>
+    <string name="error_dialog_button">Aceptar</string>
+    
+    <!-- Request Item -->
+    <string name="request_status_pending">Pendiente</string>
+    <string name="request_status_completed">Completado</string>
+    <string name="priority_label">Prioridad</string>
 </resources>

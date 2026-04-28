@@ -3,6 +3,8 @@ package com.example.formulario.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +20,7 @@ import com.example.formulario.viewmodel.FormViewModel
 @Composable
 fun FormScreen(
     modifier: Modifier = Modifier,
+    onNavigateToRequests: () -> Unit = {},
     viewModel: FormViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -31,20 +34,45 @@ fun FormScreen(
         stringResource(R.string.category_feedback)
     )
     
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Dimens.paddingMedium)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        FormHeader()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(Dimens.paddingMedium)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            FormHeader()
+            
+            // Botón para ver todas las solicitudes
+            OutlinedButton(
+                onClick = onNavigateToRequests,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = Dimens.paddingMedium)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.List,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = Dimens.paddingSmall)
+                )
+                Text(text = stringResource(R.string.button_view_requests))
+            }
+            
+            FormCard(
+                uiState = uiState,
+                viewModel = viewModel,
+                categories = categories
+            )
+        }
         
-        FormCard(
-            uiState = uiState,
-            viewModel = viewModel,
-            categories = categories
-        )
+        // Error Dialog
+        uiState.errorMessage?.let { errorMessage ->
+            ErrorDialog(
+                errorMessage = errorMessage,
+                onDismiss = { viewModel.dismissErrorMessage() }
+            )
+        }
     }
 }
 

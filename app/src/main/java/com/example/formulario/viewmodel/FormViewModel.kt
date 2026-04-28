@@ -2,8 +2,9 @@ package com.example.formulario.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.formulario.data.model.NetworkResult
+import com.example.formulario.data.repository.FormRepository
 import com.example.formulario.model.FormData
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,10 +19,13 @@ data class FormUiState(
     val isSubmitting: Boolean = false,
     val submitSuccess: Boolean = false,
     val titleCharCount: Int = 0,
-    val descriptionCharCount: Int = 0
+    val descriptionCharCount: Int = 0,
+    val errorMessage: String? = null
 )
 
-class FormViewModel : ViewModel() {
+class FormViewModel(
+    private val repository: FormRepository = FormRepository()
+) : ViewModel() {
     
     private val _uiState = MutableStateFlow(FormUiState())
     val uiState: StateFlow<FormUiState> = _uiState.asStateFlow()
@@ -129,23 +133,37 @@ class FormViewModel : ViewModel() {
         }
         
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isSubmitting = true)
-            
-            // Simular envío a servidor
-            delay(2000)
-            
             _uiState.value = _uiState.value.copy(
-                isSubmitting = false,
-                submitSuccess = true
+                isSubmitting = true,
+                errorMessage = null
             )
             
-            // Resetear el formulario después de 3 segundos
-            delay(3000)
-            resetForm()
+            when (val result = repository.submitForm(_uiState.value.formData)) {
+                is NetworkResult.Success -> {
+                    _uiState.value = _uiState.value.copy(
+                        isSubmitting = false,
+                        submitSuccess = true
+                    )
+                    resetForm()
+                }
+                is NetworkResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        isSubmitting = false,
+                        errorMessage = result.message
+                    )
+                }
+                is NetworkResult.Loading -> {
+                    // No action needed
+                }
+            }
         }
     }
     
+    fun dismissErrorMessage() {
+        _uiState.value = _uiState.value.copy(errorMessage = null)
+    }
+    
     private fun resetForm() {
-        _uiState.value = FormUiState()
+        _uiState.value = FormUiState(submitSuccess = true)
     }
 }

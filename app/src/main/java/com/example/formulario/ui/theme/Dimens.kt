@@ -20,6 +20,9 @@ object Dimens {
     val cardElevation = 4.dp
     val cardCornerRadius = 12.dp
     
+    // Corner radius
+    val cornerRadiusSmall = 8.dp
+    
     // Button
     val buttonHeight = 56.dp
     val buttonCornerRadius = 8.dp
