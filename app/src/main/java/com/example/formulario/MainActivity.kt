@@ -1,5 +1,6 @@
 package com.example.formulario
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,12 +13,13 @@ import com.example.formulario.ui.theme.FormularioTheme
 
 //Segundo ejercicio con IA Juan de Dios Panches
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             FormularioTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
                     NavigationGraph(
                         modifier = Modifier
                     )
