@@ -23,8 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.formulario.R
 import com.example.formulario.data.model.FormEntity
 import com.example.formulario.ui.theme.Dimens
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.formulario.utils.convertirAHoraLocal
 
 @Composable
 fun RequestItem(
@@ -109,7 +108,7 @@ fun RequestItem(
             request.createdAt?.let { timestamp ->
                 Spacer(modifier = Modifier.height(Dimens.paddingExtraSmall))
                 Text(
-                    text = formatDate(timestamp),
+                    text = convertirAHoraLocal(timestamp),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
@@ -125,21 +124,4 @@ private fun getPriorityColor(priority: Int) = when (priority) {
     3, 4 -> MaterialTheme.colorScheme.primary
     5 -> MaterialTheme.colorScheme.error
     else -> MaterialTheme.colorScheme.primary
-}
-
-private fun formatDate(timestamp: String): String {
-    return try {
-        // Limpiar el timestamp: eliminar microsegundos y manejar formato Z
-        val cleanTimestamp = timestamp
-            .replace(Regex("\\.\\d+"), "") // Eliminar microsegundos (.123456)
-            .replace("Z", "+00:00") // Reemplazar Z por +00:00
-        
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-        
-        val date = inputFormat.parse(cleanTimestamp)
-        date?.let { outputFormat.format(it) } ?: timestamp
-    } catch (e: Exception) {
-        timestamp
-    }
 }
