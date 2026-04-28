@@ -344,22 +344,7 @@ y exponer las credenciales en `BuildConfig` de forma segura.
 
 ---
 
-## 11. Próximos Pasos (Roadmap)
-
-- [ ] Completar integración con Supabase
-- [ ] Implementar pantalla de listado (RequestsScreen)
-- [ ] Añadir navegación entre pantallas
-- [ ] Implementar pull-to-refresh en listado
-- [ ] Añadir búsqueda/filtrado de registros
-- [ ] Crear tests unitarios
-- [ ] Implementar caché local (Room)
-- [ ] Añadir modo offline
-- [ ] Mejorar accesibilidad
-- [ ] Añadir animaciones avanzadas
-
----
-
-## 12. Contacto y Notas
+## 11. Contacto y Notas
 
 **Versión del documento**: 1.0  
 **Última actualización**: 27/04/2026  
@@ -368,7 +353,7 @@ y exponer las credenciales en `BuildConfig` de forma segura.
 
 ---
 
-## 13. Tips para IAs que Continúen Este Proyecto
+## 12. Tips para IAs que Continúen Este Proyecto
 
 1. **Siempre lee los archivos existentes** antes de crear nuevos componentes
 2. **Respeta la estructura de carpetas** establecida
@@ -382,5 +367,3 @@ y exponer las credenciales en `BuildConfig` de forma segura.
 10. **Manejo de errores**: siempre mostrar feedback al usuario
 
 ---
-
-**¡Éxito con el desarrollo! 🚀**
