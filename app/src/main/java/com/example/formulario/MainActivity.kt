@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.example.formulario.navigation.NavigationGraph
 import com.example.formulario.ui.theme.FormularioTheme
 
+//Segundo ejercicio con IA Juan de Dios Panches
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
